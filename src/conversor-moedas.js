@@ -17,6 +17,12 @@ function ConversorMoedas() {
   const [formValidado, setFormValidado] = useState(false);
   const [exibirModal, setExibirModal] = useState(false);
   const [resultadoConversao, setResultadoConversao] = useState('');
+  const [exibirMsgErro, setExibirMsgErro] = useState(false);
+
+  function exibirError(){
+    setExibirMsgErro(true);
+    setExibirSpinner(false);
+  }
 
   function handleValor(event){
     //retorna um string passando uma epxressao regular
@@ -56,7 +62,16 @@ function ConversorMoedas() {
       setExibirSpinner(true);
       //EXECUTA DE MODO ASSINCRONA
       axios.get(FIXER_URL)
-        .then(res => {const cotacao = obterCotacao(res.data); setResultadoConversao(`${valor} ${moedaDe} = ${cotacao} ${moedaPara}`); setExibirModal(true); setExibirSpinner(false);});
+        .then(res => {const cotacao = obterCotacao(res.data); 
+          if(cotacao){
+          setResultadoConversao(`${valor} ${moedaDe} = ${cotacao} ${moedaPara}`); 
+          setExibirModal(true); 
+          setExibirSpinner(false);
+          setExibirMsgErro(false);
+        }else{
+          exibirError();
+        } 
+      }).catch(err => exibirError());
     }
   }
 
@@ -64,7 +79,7 @@ function ConversorMoedas() {
   return (
     <div>
       <h1>Conversor Moedas</h1>
-      <Alert variant="danger" show={false}>
+      <Alert variant="danger" show={exibirMsgErro}>
         Error obtendo dados de conversao, tente novamente !!
       </Alert>
       <Jumbotron>
