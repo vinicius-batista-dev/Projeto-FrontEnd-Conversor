@@ -29,6 +29,12 @@ function ConversorMoedas() {
   function converter(event){
     event.preventDefault();
     setFormValidado(true);
+
+    if(event.currentTarget.checkValidity() === true){
+      alert('CORRETO');
+    }else{
+      alert('INCORRETO');
+    }
   }
 
   return (
