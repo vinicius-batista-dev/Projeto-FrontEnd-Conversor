@@ -9,6 +9,10 @@ function ConversorMoedas() {
 
   const [valor, setValor] = useState('1');
 
+  function handleValor(){
+    
+  }
+
   return (
     <div>
       <h1>Conversor Moedas</h1>
@@ -19,7 +23,7 @@ function ConversorMoedas() {
         <Form>
             <Form.Row>
               <Col sm="3">
-                <Form.Control placeholder="0" value={1} required/>
+                <Form.Control placeholder="0" value={valor} onChange={handleValor} required/>
               </Col>
 
               <Col sm="3">
