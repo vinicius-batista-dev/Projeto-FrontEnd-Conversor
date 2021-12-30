@@ -4,14 +4,19 @@ import { Jumbotron, Form, Col, Button, Spinner, Alert, Modal } from "react-boots
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faAngleDoubleRight} from '@fortawesome/free-solid-svg-icons';
 import ListarMoedas from "./listar-moedas";
+import axios from "axios";
 
 function ConversorMoedas() {
+
+  const FIXER_URL = 'http://data.fixer.io/api/latest?access_key=a097dd55ddf54cf298104e06fbf9f1f7'
 
   const [valor, setValor] = useState('1');
   const [moedaDe, setMoedaDe] = useState('BRL');
   const [moedaPara, setMoedaPara] = useState('USD');
   const [exibirSpinner, setExibirSpinner] = useState(false);
   const [formValidado, setFormValidado] = useState(false);
+  const [exibirModal, setExibirModal] = useState(false);
+  const [resultadoConversao, setResultadoConversao] = useState('');
 
   function handleValor(event){
     //retorna um string passando uma epxressao regular
@@ -26,16 +31,35 @@ function ConversorMoedas() {
     setMoedaPara(event.target.value);
   }
 
+  function handleFecharModal(event){
+    setValor('1');
+    setMoedaDe('BRL');
+    setFormValidado(false);
+    setExibirModal(false);
+  }
+
+  function obterCotacao(dadosCotacao){
+    if(!dadosCotacao || dadosCotacao.success !== true){
+      return false;
+    }
+    const cotacaoDe = dadosCotacao.rates[moedaDe];
+    const cotacaoPara = dadosCotacao.rates[moedaPara];
+    const cotacao = (1 / cotacaoDe * cotacaoPara) * valor;
+    return cotacao.toFixed(2);
+  }
+
   function converter(event){
     event.preventDefault();
     setFormValidado(true);
 
     if(event.currentTarget.checkValidity() === true){
-      alert('CORRETO');
-    }else{
-      alert('INCORRETO');
+      setExibirSpinner(true);
+      //EXECUTA DE MODO ASSINCRONA
+      axios.get(FIXER_URL)
+        .then(res => {const cotacao = obterCotacao(res.data); setResultadoConversao(`${valor} ${moedaDe} = ${cotacao} ${moedaPara}`); setExibirModal(true); setExibirSpinner(false);});
     }
   }
+
 
   return (
     <div>
@@ -78,15 +102,15 @@ function ConversorMoedas() {
               </Col>
             </Form.Row>
         </Form>
-        <Modal show={false}>
+        <Modal show={exibirModal} onHide={handleFecharModal}>
           <Modal.Header closeButton>
             <Modal.Title>Conversão</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Resultado da conversao...
+            {resultadoConversao}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="success">
+            <Button variant="success" onClick={handleFecharModal}>
               Nova Conversao
             </Button>
           </Modal.Footer>
