@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import './conversor-moedas.css';
 import { Jumbotron, Form, Col, Button, Spinner, Alert, Modal } from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -6,6 +6,9 @@ import {faAngleDoubleRight} from '@fortawesome/free-solid-svg-icons';
 import ListarMoedas from "./listar-moedas";
 
 function ConversorMoedas() {
+
+  const [valor, setValor] = useState('1');
+
   return (
     <div>
       <h1>Conversor Moedas</h1>
